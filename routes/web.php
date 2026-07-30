@@ -14,17 +14,18 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-    Route::middleware('admin')->group(function () {
+    // KITA TAMBAHKAN prefix('admin') DI SINI
+    Route::middleware('admin')->prefix('admin')->group(function () {
         // Staff
         Route::resource('kader', StaffController::class);
         // Child
+        Route::resource('balita', App\Http\Controllers\ChildController::class);
         // Activity
         // Report
     });
 
     Route::middleware('staff')->group(function () {
-
-        // Examination
+        // Examination (Khusus staff, mungkin URL-nya tetap /pemeriksaan)
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

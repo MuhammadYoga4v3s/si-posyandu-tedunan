@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Child extends Model
 {
+    protected $guarded = [];
     public function examinations(): HasMany
     {
         return $this->hasMany(Examination::class);

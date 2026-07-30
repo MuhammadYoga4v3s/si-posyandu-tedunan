@@ -1,17 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Data Kader') }}
+            {{ __('Data Balita') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- Tombol Tambah Kader -->
+            <!-- Tombol Tambah Balita -->
             <div class="mb-4 flex justify-end">
-                <a href="{{ route('kader.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
-                    + Tambah Kader
+                <a href="{{ route('balita.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
+                    + Tambah Balita
                 </a>
             </div>
 
@@ -24,30 +24,30 @@
                             <thead class="bg-gray-100 border-b-2 border-gray-200">
                                 <tr>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">NO</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">NAMA</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">USERNAME</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">JABATAN</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">NOMOR HP</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">NAMA BALITA</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">L/P</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">TANGGAL LAHIR</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">NAMA IBU</th>
                                     <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">AKSI</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Looping Data Kader -->
-                                @forelse ($staffs as $index => $staff)
+                                <!-- Looping Data Balita -->
+                                @forelse ($children as $index => $child)
                                     <tr class="border-b hover:bg-gray-50">
                                         <td class="px-4 py-4 text-sm">{{ $index + 1 }}</td>
-                                        <td class="px-4 py-4 text-sm font-medium text-gray-900">{{ $staff->full_name }}</td>
-                                        <td class="px-4 py-4 text-sm text-gray-600">{{ $staff->user->username ?? '-' }}</td>
-                                        <td class="px-4 py-4 text-sm text-gray-600">{{ $staff->position }}</td>
-                                        <td class="px-4 py-4 text-sm text-gray-600">{{ $staff->phone_number }}</td>
+                                        <td class="px-4 py-4 text-sm font-medium text-gray-900">{{ $child->full_name }}</td>
+                                        <td class="px-4 py-4 text-sm text-gray-600">{{ $child->gender }}</td>
+                                        <td class="px-4 py-4 text-sm text-gray-600">{{ $child->birth_date }}</td>
+                                        <td class="px-4 py-4 text-sm text-gray-600">{{ $child->mother_name }}</td>
                                         <td class="px-4 py-4 text-sm text-center flex justify-center gap-2">
                                             <!-- Tombol Edit -->
-                                            <a href="{{ route('kader.edit', $staff->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs font-semibold">
+                                            <a href="{{ route('balita.edit', $child->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs font-semibold">
                                                 Edit
                                             </a>
 
                                             <!-- Tombol Hapus -->
-                                            <form action="{{ route('kader.destroy', $staff->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kader ini? Semua data terkait (termasuk akun login) akan ikut terhapus!');">
+                                            <form action="{{ route('balita.destroy', $child->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data balita ini?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-semibold">
@@ -61,10 +61,10 @@
                                     <tr>
                                         <td colspan="6" class="px-4 py-12 text-center text-gray-500">
                                             <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                             </svg>
-                                            <p class="text-lg font-medium text-gray-900">Belum ada data kader.</p>
-                                            <p class="text-sm mt-1">Klik tombol <strong>Tambah Kader</strong> di atas untuk menambahkan data baru.</p>
+                                            <p class="text-lg font-medium text-gray-900">Belum ada data balita.</p>
+                                            <p class="text-sm mt-1">Klik tombol <strong>Tambah Balita</strong> di atas untuk mendaftarkan balita baru.</p>
                                         </td>
                                     </tr>
                                 @endforelse
