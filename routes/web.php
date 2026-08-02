@@ -21,7 +21,9 @@ Route::middleware('auth')->group(function () {
         // Child
         Route::resource('balita', App\Http\Controllers\ChildController::class);
         // Activity
+        Route::resource('kegiatan', App\Http\Controllers\ActivityController::class);
         // Report
+        Route::resource('pemeriksaan', App\Http\Controllers\ExaminationController::class);
     });
 
     Route::middleware('staff')->group(function () {
