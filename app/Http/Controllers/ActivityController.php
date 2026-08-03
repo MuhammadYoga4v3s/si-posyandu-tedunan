@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ActivityController extends Controller
 {
@@ -42,6 +43,13 @@ class ActivityController extends Controller
 
         // 2. Menyimpan data yang sudah valid ke dalam tabel 'activities' di database
         \App\Models\Activity::create($request->all());
+        // Merekam aktivitas
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Tambah Kegiatan',
+            'activity_time' => now(),
+            'description'   => 'Menambahkan data kegiatan Posyandu pada tanggal: ' . $request->activity_date,
+        ]);
 
         // 3. Mengembalikan pengguna ke halaman daftar kegiatan sambil membawa pesan sukses
         return redirect()->route('kegiatan.index')->with('success', 'Data kegiatan Posyandu berhasil ditambahkan!');
@@ -84,6 +92,13 @@ class ActivityController extends Controller
         // Mencari data yang mau diedit, lalu menyimpannya dengan data baru
         $kegiatan = \App\Models\Activity::findOrFail($id);
         $kegiatan->update($request->all());
+        // Merekam aktivitas
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Ubah Kegiatan',
+            'activity_time' => now(),
+            'description'   => 'Mengubah data kegiatan dengan ID: ' . $id,
+        ]);
 
         return redirect()->route('kegiatan.index')->with('success', 'Data kegiatan berhasil diperbarui!');
     }
@@ -96,6 +111,13 @@ class ActivityController extends Controller
         // Mencari data lalu menghapusnya
         $kegiatan = \App\Models\Activity::findOrFail($id);
         $kegiatan->delete();
+        // Merekam aktivitas
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Hapus Kegiatan',
+            'activity_time' => now(),
+            'description'   => 'Menghapus data kegiatan dengan ID: ' . $id,
+        ]);
 
         return redirect()->route('kegiatan.index')->with('success', 'Data kegiatan berhasil dihapus!');
     }

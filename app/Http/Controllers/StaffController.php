@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class StaffController extends Controller
 {
@@ -75,6 +76,13 @@ class StaffController extends Controller
             ]);
             
         });
+        // Merekam aktivitas
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Tambah Kader',
+            'activity_time' => now(),
+            'description'   => 'Menambahkan data kader baru: ' . $request->full_name,
+        ]);
 
         // 3. Balikkan ke halaman Daftar Kader kalau sudah sukses
         return redirect()->route('kader.index');
@@ -145,6 +153,13 @@ class StaffController extends Controller
             ]);
             
         });
+        // Merekam aktivitas
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Ubah Kader',
+            'activity_time' => now(),
+            'description'   => 'Mengubah data kader dengan ID: ' . $id,
+        ]);
 
         // 4. Balikkan ke halaman Daftar Kader
         return redirect()->route('kader.index');
@@ -166,6 +181,13 @@ class StaffController extends Controller
 
         // 4. Hapus juga akun login-nya di tabel users
         User::destroy($userId);
+        // Merekam aktivitas
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Hapus Kader',
+            'activity_time' => now(),
+            'description'   => 'Menghapus data kader dengan ID: ' . $id,
+        ]);
 
         // 5. Kembali ke halaman daftar kader
         return redirect()->route('kader.index');

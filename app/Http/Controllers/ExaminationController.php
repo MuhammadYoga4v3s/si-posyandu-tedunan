@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ExaminationController extends Controller
 {
@@ -68,6 +69,13 @@ class ExaminationController extends Controller
         // 3. Simpan ke database
         \App\Models\Examination::create($data);
 
+        // Merekam aktivitas ke Activity Log
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Tambah Pemeriksaan',
+            'activity_time' => now(),
+            'description'   => 'Menambahkan data pemeriksaan baru untuk balita ID: ' . $request->child_id,
+        ]);
         return redirect()->route('pemeriksaan.index')->with('success', 'Data pemeriksaan balita berhasil disimpan!');
     }
 
@@ -133,6 +141,14 @@ class ExaminationController extends Controller
         $pemeriksaan = \App\Models\Examination::findOrFail($id);
         $pemeriksaan->update($data);
 
+        // Merekam aktivitas ke Activity Log
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Ubah Pemeriksaan',
+            'activity_time' => now(),
+            'description'   => 'Mengubah data pemeriksaan dengan ID: ' . $id,
+        ]);
+
         return redirect()->route('pemeriksaan.index')->with('success', 'Data pemeriksaan balita berhasil diperbarui!');
     }
 
@@ -144,6 +160,14 @@ class ExaminationController extends Controller
         // Menghapus data pemeriksaan
         $pemeriksaan = \App\Models\Examination::findOrFail($id);
         $pemeriksaan->delete();
+
+        // Merekam aktivitas ke Activity Log
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Hapus Pemeriksaan',
+            'activity_time' => now(),
+            'description'   => 'Menghapus data pemeriksaan dengan ID: ' . $id,
+        ]);
 
         return redirect()->route('pemeriksaan.index')->with('success', 'Data pemeriksaan balita berhasil dihapus!');
     }

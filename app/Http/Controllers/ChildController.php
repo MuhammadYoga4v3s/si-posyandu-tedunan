@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Child; 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ChildController extends Controller
 {
@@ -80,6 +81,14 @@ class ChildController extends Controller
             'is_resident'         => $request->is_resident,
         ]);
 
+        // Merekam aktivitas
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Tambah Balita',
+            'activity_time' => now(),
+            'description'   => 'Menambahkan data balita baru: ' . $request->full_name,
+        ]);
+
         // 3. Kembali ke Halaman Daftar Balita
         return redirect()->route('balita.index');
     }
@@ -138,6 +147,14 @@ class ChildController extends Controller
         // Karena kita sudah pakai protected $guarded = [] di Model, kodenya bisa dipersingkat:
         $child->update($request->all());
 
+        // Merekam aktivitas
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Ubah Balita',
+            'activity_time' => now(),
+            'description'   => 'Mengubah data balita dengan ID: ' . $id,
+        ]);
+
         // 4. Balikkan ke halaman Daftar Balita
         return redirect()->route('balita.index');
     }
@@ -152,6 +169,13 @@ class ChildController extends Controller
         // 2. Hapus data balita dari database
         $child->delete();
         // 3. Kembali ke halaman daftar balita dengan pesan (opsional)
+        // Merekam aktivitas
+        \App\Models\ActivityLog::create([
+            'user_id'       => Auth::id(),
+            'activity'      => 'Hapus Balita',
+            'activity_time' => now(),
+            'description'   => 'Menghapus data balita dengan ID: ' . $id,
+        ]);
         return redirect()->route('balita.index');
     }
 }

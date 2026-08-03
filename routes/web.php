@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('pemeriksaan', App\Http\Controllers\ExaminationController::class);
         // Cetak pdf
         Route::get('pemeriksaan/{id}/cetak-pdf', [\App\Http\Controllers\ExaminationController::class, 'cetakPdf'])->name('pemeriksaan.cetak');
+        // log-activity
+        Route::get('riwayat-aktivitas', [\App\Http\Controllers\ActivityLogController::class, 'index'])->name('riwayat.index');
     });
 
     Route::middleware('staff')->group(function () {
