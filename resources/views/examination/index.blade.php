@@ -57,8 +57,13 @@
                                         <td class="px-4 py-3">{{ $data->staff->full_name }}</td>
                                         
                                         <td class="px-4 py-3 text-center space-x-2">
+                                            <!-- Tombol Cetak PDF -->
+                                            <a href="{{ route('pemeriksaan.cetak', $data->id) }}" class="text-green-600 hover:text-green-800 font-medium">Cetak PDF</a>
+
+                                            <!-- Tombol Edit -->
                                             <a href="{{ route('pemeriksaan.edit', $data->id) }}" class="text-yellow-600 hover:text-yellow-800 font-medium">Edit</a>
                                             
+                                            <!-- Tombol Hapus -->
                                             <form action="{{ route('pemeriksaan.destroy', $data->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus data pemeriksaan ini?')">
                                                 @csrf
                                                 @method('DELETE')

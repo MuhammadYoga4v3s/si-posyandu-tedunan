@@ -147,4 +147,17 @@ class ExaminationController extends Controller
 
         return redirect()->route('pemeriksaan.index')->with('success', 'Data pemeriksaan balita berhasil dihapus!');
     }
+
+    public function cetakPdf($id)
+    {
+        // 1. Ambil data pemeriksaan beserta relasinya
+        $pemeriksaan = \App\Models\Examination::with(['child', 'staff', 'activity'])->findOrFail($id);
+
+        // 2. Siapkan file PDF menggunakan tampilan dari 'examination.pdf'
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('examination.pdf', compact('pemeriksaan'));
+
+        // 3. Download file-nya dengan nama yang otomatis menyesuaikan nama balita
+        $namaFile = 'Hasil_Pemeriksaan_' . str_replace(' ', '_', $pemeriksaan->child->full_name) . '.pdf';
+        return $pdf->download($namaFile);
+    }
 }

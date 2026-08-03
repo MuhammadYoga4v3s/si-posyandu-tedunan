@@ -10,9 +10,9 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
     // KITA TAMBAHKAN prefix('admin') DI SINI
     Route::middleware('admin')->prefix('admin')->group(function () {
@@ -24,6 +24,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('kegiatan', App\Http\Controllers\ActivityController::class);
         // Report
         Route::resource('pemeriksaan', App\Http\Controllers\ExaminationController::class);
+        // Cetak pdf
+        Route::get('pemeriksaan/{id}/cetak-pdf', [\App\Http\Controllers\ExaminationController::class, 'cetakPdf'])->name('pemeriksaan.cetak');
     });
 
     Route::middleware('staff')->group(function () {
