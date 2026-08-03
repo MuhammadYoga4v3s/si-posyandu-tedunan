@@ -11,9 +11,24 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                        Dashboard
+                    </x-nav-link>
+                    <x-nav-link :href="route('balita.index')" :active="request()->routeIs('balita.*')">
+                        Data Balita
+                    </x-nav-link>
+                    <x-nav-link :href="route('kader.index')" :active="request()->routeIs('kader.*')">
+                        Data Kader
+                    </x-nav-link>
+                    <x-nav-link :href="route('kegiatan.index')" :active="request()->routeIs('kegiatan.*')">
+                        Kegiatan Posyandu
+                    </x-nav-link>
+                    <x-nav-link :href="route('pemeriksaan.index')" :active="request()->routeIs('pemeriksaan.*')">
+                        Pemeriksaan
+                    </x-nav-link>
+                    <x-nav-link :href="route('riwayat.index')" :active="request()->routeIs('riwayat.*')">
+                        Riwayat Aktivitas
                     </x-nav-link>
                 </div>
             </div>
@@ -68,7 +83,22 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+                Dashboard
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('balita.index')" :active="request()->routeIs('balita.*')">
+                Data Balita
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('kader.index')" :active="request()->routeIs('kader.*')">
+                Data Kader
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('kegiatan.index')" :active="request()->routeIs('kegiatan.*')">
+                Kegiatan Posyandu
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('pemeriksaan.index')" :active="request()->routeIs('pemeriksaan.*')">
+                Pemeriksaan
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('riwayat.index')" :active="request()->routeIs('riwayat.*')">
+                Riwayat Aktivitas
             </x-responsive-nav-link>
         </div>
 
