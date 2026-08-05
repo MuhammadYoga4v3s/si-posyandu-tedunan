@@ -32,9 +32,6 @@ class ChildController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         // 1. Validasi Data (Memastikan form diisi dengan benar)
@@ -56,7 +53,14 @@ class ChildController extends Controller
             'address'             => 'required|string',
             'rt'                  => 'required|string|max:10',
             'rw'                  => 'required|string|max:10',
+            'dusun'               => 'nullable|string|max:255',
             'is_resident'         => 'required|boolean',
+            
+            // Validasi kolom baru
+            'birth_weight'        => 'nullable|numeric',
+            'birth_length'        => 'nullable|numeric',
+            'phone'               => 'nullable|string|max:20',
+            'notes'               => 'nullable|string',
         ]);
 
         // 2. Simpan Data ke Tabel Balita
@@ -78,7 +82,14 @@ class ChildController extends Controller
             'address'             => $request->address,
             'rt'                  => $request->rt,
             'rw'                  => $request->rw,
+            'dusun'               => $request->dusun,
             'is_resident'         => $request->is_resident,
+            
+            // Simpan kolom baru
+            'birth_weight'        => $request->birth_weight,
+            'birth_length'        => $request->birth_length,
+            'phone'               => $request->phone,
+            'notes'               => $request->notes,
         ]);
 
         // Merekam aktivitas
@@ -121,7 +132,7 @@ class ChildController extends Controller
         // 1. Cari data balita yang mau diupdate
         $child = Child::findOrFail($id);
 
-        // 2. Validasi Input (Sama persis dengan saat fungsi Tambah)
+        // 2. Validasi Input
         $request->validate([
             'full_name'           => 'required|string|max:255',
             'national_id'         => 'nullable|string|max:20',
@@ -140,11 +151,17 @@ class ChildController extends Controller
             'address'             => 'required|string',
             'rt'                  => 'required|string|max:10',
             'rw'                  => 'required|string|max:10',
+            'dusun'               => 'nullable|string|max:255',
             'is_resident'         => 'required|boolean',
+            
+            // Validasi kolom baru
+            'birth_weight'        => 'nullable|numeric',
+            'birth_length'        => 'nullable|numeric',
+            'phone'               => 'nullable|string|max:20',
+            'notes'               => 'nullable|string',
         ]);
 
         // 3. Simpan perubahan ke database
-        // Karena kita sudah pakai protected $guarded = [] di Model, kodenya bisa dipersingkat:
         $child->update($request->all());
 
         // Merekam aktivitas
@@ -166,9 +183,10 @@ class ChildController extends Controller
     {
         // 1. Cari data balita berdasarkan ID
         $child = Child::findOrFail($id);
+        
         // 2. Hapus data balita dari database
         $child->delete();
-        // 3. Kembali ke halaman daftar balita dengan pesan (opsional)
+        
         // Merekam aktivitas
         \App\Models\ActivityLog::create([
             'user_id'       => Auth::id(),
@@ -176,6 +194,8 @@ class ChildController extends Controller
             'activity_time' => now(),
             'description'   => 'Menghapus data balita dengan ID: ' . $id,
         ]);
+        
+        // 3. Kembali ke halaman daftar balita
         return redirect()->route('balita.index');
     }
 }

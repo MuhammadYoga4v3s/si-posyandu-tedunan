@@ -6,25 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('examinations', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('child_id')
-                ->constrained('children')
-                ->cascadeOnDelete();
-
-            $table->foreignId('staff_id')
-                ->constrained('staff')
-                ->cascadeOnDelete();
-
-            $table->foreignId('activity_id')
-                ->constrained('activities')
-                ->cascadeOnDelete();
+            $table->foreignId('child_id')->constrained('children')->cascadeOnDelete();
+            $table->foreignId('staff_id')->constrained('staff')->cascadeOnDelete();
+            $table->foreignId('activity_id')->constrained('activities')->cascadeOnDelete();
 
             // Growth
             $table->decimal('weight',5,2)->nullable();
@@ -59,6 +48,8 @@ return new class extends Migration
             $table->boolean('vitamin_a')->default(false);
             $table->boolean('deworming')->default(false);
             $table->boolean('local_food_program')->default(false);
+            $table->string('pmt_portion')->nullable(); 
+
             $table->boolean('health_education')->default(false);
 
             // Notes
@@ -70,9 +61,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('examinations');

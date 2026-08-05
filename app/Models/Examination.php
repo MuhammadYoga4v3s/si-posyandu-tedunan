@@ -2,42 +2,61 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable([
-    'child_id',
-    'staff_id',
-    'activity_id',
-    'weight',
-    'height',
-    'head_circumference',
-    'upper_arm_circumference',
-    'development_check',
-    'symptoms',
-    'nutrition',
-    'immunization',
-    'vitamin_a',
-    'deworming',
-    'local_food_program',
-    'health_education',
-    'referral',
-    'notes',
-])]
 class Examination extends Model
 {
-    public function child(): BelongsTo
+    use HasFactory;
+
+    protected $fillable = [
+        'child_id',
+        'staff_id',
+        'activity_id',
+        
+        'weight',
+        'weight_result',
+        'weight_for_age',
+        'height',
+        'height_for_age',
+        'weight_for_height',
+        'head_circumference',
+        'head_circumference_status',
+        'upper_arm_circumference',
+        'upper_arm_status',
+        
+        'development_check',
+        'cough_two_weeks',
+        'fever_two_weeks',
+        'weight_not_increasing',
+        'tb_contact',
+        
+        'exclusive_breastfeeding',
+        'complementary_feeding',
+        'immunization',
+        'vitamin_a',
+        'deworming',
+        'local_food_program',
+        
+        'pmt_portion', 
+        
+        'health_education',
+        'illness_symptoms',
+        'referral',
+        'notes',
+    ];
+
+    public function child()
     {
         return $this->belongsTo(Child::class);
     }
 
-    public function staff(): BelongsTo
+    public function staff()
     {
         return $this->belongsTo(Staff::class);
     }
 
-    public function activity(): BelongsTo
+    public function activity()
     {
         return $this->belongsTo(Activity::class);
     }

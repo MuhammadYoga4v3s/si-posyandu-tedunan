@@ -131,12 +131,20 @@
                         </div>
 
                         <!-- Bagian 4: Catatan & Teks Tambahan -->
-                        <h3 class="text-lg font-bold text-gray-700 mb-4 border-b pb-2">4. Imunisasi & Catatan</h3>
+                        <h3 class="text-lg font-bold text-gray-700 mb-4 border-b pb-2">4. Imunisasi, PMT & Catatan</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Imunisasi</label>
                                 <input type="text" name="immunization" value="{{ $pemeriksaan->immunization }}" class="w-full border-gray-300 rounded-md shadow-sm">
                             </div>
+                            
+                            <!-- TAMBAHAN BARU: INPUT PORSI PMT -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Porsi PMT</label>
+                                <input type="text" name="pmt_portion" value="{{ $pemeriksaan->pmt_portion }}" class="w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <!-- ------------------------------- -->
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Gejala Sakit Terlihat</label>
                                 <input type="text" name="illness_symptoms" value="{{ $pemeriksaan->illness_symptoms }}" class="w-full border-gray-300 rounded-md shadow-sm">
@@ -145,7 +153,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Surat Rujukan</label>
                                 <input type="text" name="referral" value="{{ $pemeriksaan->referral }}" class="w-full border-gray-300 rounded-md shadow-sm">
                             </div>
-                            <div>
+                            <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Catatan Tambahan Kader</label>
                                 <textarea name="notes" rows="2" class="w-full border-gray-300 rounded-md shadow-sm">{{ $pemeriksaan->notes }}</textarea>
                             </div>
@@ -159,6 +167,11 @@
                     </form>
                 </div>
             </div>
+        </div>
+        <!-- FOOTER -->
+        <div class="w-full mt-auto pt-10 pb-6 px-4 border-t border-blue-100 text-center">
+            <p class="text-xs font-medium text-slate-500">© 2026 Sistem Informasi Posyandu Desa Tedunan. All rights reserved.</p>
+            <p class="text-xs font-medium text-slate-500 mt-1">Developed by <span class="font-semibold text-blue-700">KKN-T UNDIP 88</span></p>
         </div>
     </div>
 </x-app-layout>
