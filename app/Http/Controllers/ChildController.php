@@ -11,13 +11,27 @@ class ChildController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil semua data balita, diurutkan dari yang terbaru
-        $children = Child::latest()->get();
-        
-        // Mengirim data ke halaman daftar balita
-        return view('child.index', compact('children'));
+        // Tangkap input pencarian dari user (jika ada)
+        $search = $request->input('search');
+
+        // Query database: Urutkan abjad A-Z berdasarkan nama
+        $query = Child::orderBy('full_name', 'asc');
+
+        // Jika user mengetik sesuatu di kotak pencarian
+        if ($search) {
+            $query->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('family_card_number', 'like', "%{$search}%")
+                  ->orWhere('national_id', 'like', "%{$search}%")
+                  ->orWhere('mother_name', 'like', "%{$search}%");
+        }
+
+        // Batasi maksimal 50 data per halaman (Pagination)
+        // Gunakan append('search') agar saat pindah halaman 2, 3, dst., hasil pencariannya tidak hilang
+        $children = $query->paginate(50)->appends(['search' => $search]);
+
+        return view('child.index', compact('children', 'search'));
     }
 
     /**

@@ -58,9 +58,22 @@
 
             <!-- 2. TABEL DATA SECTION -->
             <div class="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden">
-                <div class="px-6 py-5 md:px-8 border-b border-blue-100">
-                    <h3 class="text-lg font-bold text-slate-800">Daftar Balita</h3>
-                    <p class="text-sm font-medium text-slate-500 mt-1">Seluruh balita yang terdaftar di sistem posyandu</p>
+                <!-- Header Tabel & Kotak Pencarian -->
+                <div class="px-6 py-5 md:px-8 border-b border-blue-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Daftar Balita</h3>
+                        <p class="text-sm font-medium text-slate-500 mt-1">Seluruh balita yang terdaftar di sistem posyandu</p>
+                    </div>
+
+                    <!-- Form Live Search -->
+                    <form action="{{ route('balita.index') }}" method="GET" id="searchForm" class="w-full md:w-80 relative">
+                        <input type="text" name="search" id="searchInput" value="{{ request('search') }}" placeholder="Cari nama balita / ibu..." 
+                               class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               oninput="clearTimeout(window.searchTimer); window.searchTimer = setTimeout(() => { document.getElementById('searchForm').submit(); }, 500);" autocomplete="off">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                    </form>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -78,15 +91,15 @@
                         <tbody class="divide-y divide-blue-50">
                             @forelse ($children as $index => $child)
                                 <tr class="hover:bg-blue-50 transition-colors">
-                                    <td class="py-4 px-6 text-sm font-medium text-slate-500">{{ $index + 1 }}</td>
+                                    <td class="py-4 px-6 text-sm font-medium text-slate-500">{{ ($children->currentPage() - 1) * $children->perPage() + $index + 1 }}</td>
                                     <td class="py-4 px-6">
                                         <span class="text-sm font-semibold text-slate-800">{{ $child->full_name }}</span>
                                     </td>
                                     <td class="py-4 px-6">
                                         @if(in_array(strtolower($child->gender), ['l', 'laki-laki', 'male']))
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">Laki-laki</span>
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">Laki-laki</span>
                                         @else
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-pink-50 text-pink-700 border border-pink-100">Perempuan</span>
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-pink-100 text-pink-700 border border-pink-200">Perempuan</span>
                                         @endif
                                     </td>
                                     <td class="py-4 px-6 text-sm font-medium text-slate-600">
@@ -116,16 +129,27 @@
                                 <tr>
                                     <td colspan="6" class="py-14 text-center text-slate-400">
                                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4 border border-blue-100 text-blue-300">
-                                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                         </div>
-                                        <h3 class="text-base font-bold text-slate-700 mb-1">Belum Ada Data Balita</h3>
-                                        <p class="text-sm font-medium text-slate-500">Silakan klik tombol "Tambah Data Balita" pada banner di atas.</p>
+                                        <h3 class="text-base font-bold text-slate-700 mb-1">
+                                            {{ request('search') ? 'Data Tidak Ditemukan' : 'Belum Ada Data Balita' }}
+                                        </h3>
+                                        <p class="text-sm font-medium text-slate-500">
+                                            {{ request('search') ? 'Coba gunakan kata kunci pencarian yang lain.' : 'Silakan klik tombol "Tambah Data Balita" pada banner di atas.' }}
+                                        </p>
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Menampilkan Pagination Links -->
+                @if ($children->hasPages())
+                    <div class="px-6 py-4 border-t border-blue-100 bg-white">
+                        {{ $children->links() }}
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -136,4 +160,16 @@
         </div>
 
     </div>
+
+    <!-- Script untuk menjaga kursor tetap fokus di kotak pencarian saat mengetik -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput && searchInput.value) {
+                searchInput.focus();
+                // Taruh kursor di akhir teks
+                searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+            }
+        });
+    </script>
 </x-app-layout>
