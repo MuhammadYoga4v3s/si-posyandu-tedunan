@@ -10,7 +10,7 @@ use App\Http\Controllers\ExaminationController;
 use App\Http\Controllers\ActivityLogController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::middleware('auth')->group(function () {
