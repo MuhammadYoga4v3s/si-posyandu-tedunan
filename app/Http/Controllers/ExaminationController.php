@@ -11,10 +11,27 @@ class ExaminationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $pemeriksaan = \App\Models\Examination::with(['child', 'staff', 'activity'])->latest()->get();
-        return view('examination.index', compact('pemeriksaan'));
+        $search = $request->input('search');
+
+        // Pastikan nama Modelnya sesuai (Examination)
+        $query = \App\Models\Examination::with(['child', 'activity', 'staff'])
+                    ->orderBy('created_at', 'desc'); 
+
+        if ($search) {
+            $query->whereHas('child', function($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%");
+            })->orWhereHas('staff', function($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%");
+            });
+        }
+
+        // KUNCI PERBAIKANNYA DI SINI: Gunakan paginate(), BUKAN get()
+        $pemeriksaan = $query->paginate(50)->appends(['search' => $search]);
+
+        // Pastikan nama view-nya sesuai dengan folder kamu (examination.index)
+        return view('examination.index', compact('pemeriksaan', 'search'));
     }
 
     /**
@@ -22,11 +39,16 @@ class ExaminationController extends Controller
      */
     public function create()
     {
-        $balita = \App\Models\Child::all();
-        $kader = \App\Models\Staff::all();
+        // Urutkan kegiatan berdasarkan tanggal terbaru ke terlama
         $kegiatan = \App\Models\Activity::orderBy('activity_date', 'desc')->get();
+        
+        // Urutkan balita sesuai abjad A-Z (biar tetap rapi dan mudah dicari)
+        $balita = \App\Models\Child::orderBy('full_name', 'asc')->get();
+        
+        // Urutkan kader berdasarkan data yang paling baru ditambahkan
+        $kader = \App\Models\Staff::orderBy('created_at', 'desc')->get();
 
-        return view('examination.create', compact('balita', 'kader', 'kegiatan'));
+        return view('examination.create', compact('kegiatan', 'balita', 'kader'));
     }
 
     /**
@@ -98,14 +120,17 @@ class ExaminationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
+        // Ambil data pemeriksaan yang mau diedit
         $pemeriksaan = \App\Models\Examination::findOrFail($id);
-        $balita = \App\Models\Child::all();
-        $kader = \App\Models\Staff::all();
-        $kegiatan = \App\Models\Activity::orderBy('activity_date', 'desc')->get();
 
-        return view('examination.edit', compact('pemeriksaan', 'balita', 'kader', 'kegiatan'));
+        // Sama seperti create: urutkan kegiatan, balita, dan kader
+        $kegiatan = \App\Models\Activity::orderBy('activity_date', 'desc')->get();
+        $balita = \App\Models\Child::orderBy('full_name', 'asc')->get();
+        $kader = \App\Models\Staff::orderBy('created_at', 'desc')->get();
+
+        return view('examination.edit', compact('pemeriksaan', 'kegiatan', 'balita', 'kader'));
     }
 
     /**
