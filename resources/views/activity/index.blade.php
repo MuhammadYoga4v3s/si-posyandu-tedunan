@@ -27,10 +27,21 @@
                         <h3 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Daftar Kegiatan Posyandu</h3>
                         <p class="text-blue-50 text-sm font-medium mt-1">Kelola jadwal dan riwayat kegiatan posyandu Desa Tedunan.</p>
                     </div>
-                    <a href="{{ route('kegiatan.create') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-blue-700 text-sm font-semibold rounded-lg hover:bg-blue-50 transition duration-300 shadow-sm shrink-0">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah Kegiatan
-                    </a>
+
+                    <!-- Tombol Tambah (Aktif untuk Admin, Mati untuk Kader) -->
+                    <div>
+                        @if(auth()->check() && auth()->user()->role === 'administrator')
+                            <a href="{{ route('kegiatan.create') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-blue-700 text-sm font-semibold rounded-lg hover:bg-blue-50 transition duration-300 shadow-sm shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                Tambah Kegiatan
+                            </a>
+                        @else
+                            <div class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/40 text-white/70 text-sm font-semibold rounded-lg cursor-not-allowed select-none shrink-0" title="Akses khusus Administrator">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                Tambah Kegiatan (Khusus Admin)
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -54,7 +65,6 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-blue-50">
-                            <!-- Looping data dari Controller -->
                             @forelse ($activities as $index => $kegiatan)
                                 <tr class="hover:bg-blue-50 transition-colors">
                                     <td class="px-6 md:px-8 py-4 text-sm font-medium text-slate-600">{{ $index + 1 }}</td>
@@ -65,10 +75,9 @@
                                         {{ $namaBulan[$kegiatan->month] }} {{ $kegiatan->year }}
                                     </td>
 
-                                    <!-- Format tanggal jadi lebih enak dibaca -->
                                     <td class="px-6 md:px-8 py-4">
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
-                                            {{ \Carbon\Carbon::parse($kegiatan->activity_date)->translatedFormat('d F Y') }}
+                                            {{ \Carbon\Carbon::parse($kegiatan->activity_date)->locale('id')->translatedFormat('d F Y') }}
                                         </span>
                                     </td>
 
@@ -76,24 +85,38 @@
                                     <td class="px-6 md:px-8 py-4 text-sm font-medium text-slate-500 whitespace-normal max-w-xs">{{ $kegiatan->description ?? '-' }}</td>
                                     <td class="px-6 md:px-8 py-4">
                                         <div class="flex items-center justify-center gap-2">
-                                            <!-- Tombol Edit -->
-                                            <a href="{{ route('kegiatan.edit', $kegiatan->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-100 rounded-md hover:bg-amber-100 transition">
-                                                Edit
+                                            <!-- Tombol Cetak Laporan (Selalu aktif untuk Admin & Kader) -->
+                                            <a href="{{ route('kegiatan.cetak', $kegiatan->id) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-md hover:bg-emerald-100 transition" title="Cetak Hasil Kegiatan">
+                                                Cetak Laporan
                                             </a>
 
-                                            <!-- Tombol Hapus -->
-                                            <form action="{{ route('kegiatan.destroy', $kegiatan->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus data kegiatan ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-50 border border-red-100 rounded-md hover:bg-red-100 transition">
-                                                    Hapus
-                                                </button>
-                                            </form>
+                                            @if(auth()->check() && auth()->user()->role === 'administrator')
+                                                <!-- Tombol Edit Aktif untuk Admin -->
+                                                <a href="{{ route('kegiatan.edit', $kegiatan->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-100 rounded-md hover:bg-amber-100 transition">
+                                                    Edit
+                                                </a>
+
+                                                <!-- Tombol Hapus Aktif untuk Admin -->
+                                                <form action="{{ route('kegiatan.destroy', $kegiatan->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus data kegiatan ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-50 border border-red-100 rounded-md hover:bg-red-100 transition">
+                                                        Hapus
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <!-- Tombol Mati / Disable untuk Kader -->
+                                                <span class="px-3 py-1.5 bg-slate-100 text-slate-400 border border-slate-200 font-semibold text-xs rounded-md cursor-not-allowed select-none">
+                                                    Edit (Admin)
+                                                </span>
+                                                <span class="px-3 py-1.5 bg-slate-100 text-slate-400 border border-slate-200 font-semibold text-xs rounded-md cursor-not-allowed select-none">
+                                                    Hapus (Admin)
+                                                </span>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
                             @empty
-                                <!-- Jika database kosong (Empty State) -->
                                 <tr>
                                     <td colspan="6" class="px-6 py-14 text-center text-slate-400">
                                         <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 mb-3 text-blue-300">

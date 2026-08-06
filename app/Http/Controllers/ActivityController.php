@@ -23,6 +23,11 @@ class ActivityController extends Controller
      */
     public function create()
     {
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         // Membuka file tampilan form tambah kegiatan
         return view('activity.create');
     }
@@ -32,6 +37,11 @@ class ActivityController extends Controller
      */
     public function store(Request $request)
     {
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         // 1. Mengecek dan memastikan data yang diisi sudah sesuai aturan (Validasi)
         $request->validate([
             'month'         => 'required|integer|between:1,12',
@@ -68,6 +78,11 @@ class ActivityController extends Controller
      */
     public function edit(string $id)
     {
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         // Mencari data kegiatan berdasarkan ID
         $kegiatan = \App\Models\Activity::findOrFail($id);
         
@@ -80,6 +95,11 @@ class ActivityController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         // Validasi data baru (sama seperti saat menambah data)
         $request->validate([
             'month'         => 'required|integer|between:1,12',
@@ -108,6 +128,11 @@ class ActivityController extends Controller
      */
     public function destroy(string $id)
     {
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         // Mencari data lalu menghapusnya
         $kegiatan = \App\Models\Activity::findOrFail($id);
         $kegiatan->delete();
@@ -120,5 +145,20 @@ class ActivityController extends Controller
         ]);
 
         return redirect()->route('kegiatan.index')->with('success', 'Data kegiatan berhasil dihapus!');
+    }
+
+    public function cetak($id)
+    {
+        // Ambil data kegiatan beserta hasil pemeriksaan balita dan data balitanya
+        $kegiatan = \App\Models\Activity::with(['examinations.child', 'examinations.staff'])->findOrFail($id);
+
+        // Render file view menjadi PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('activity.cetak', compact('kegiatan'))
+              ->setPaper('A4', 'landscape'); // Menggunakan kertas A4 format memanjang (Landscape) agar tabel muat
+
+        // Langsung paksa browser untuk mendownload filenya
+        $namaFile = 'Laporan-Posyandu-' . \Carbon\Carbon::parse($kegiatan->activity_date)->format('Y-m-d') . '.pdf';
+        
+        return $pdf->download($namaFile);
     }
 }

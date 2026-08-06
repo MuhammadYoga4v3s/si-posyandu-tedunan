@@ -28,7 +28,6 @@ class ChildController extends Controller
         }
 
         // Batasi maksimal 50 data per halaman (Pagination)
-        // Gunakan append('search') agar saat pindah halaman 2, 3, dst., hasil pencariannya tidak hilang
         $children = $query->paginate(50)->appends(['search' => $search]);
 
         return view('child.index', compact('children', 'search'));
@@ -39,7 +38,11 @@ class ChildController extends Controller
      */
     public function create()
     {
-        // Menampilkan form tambah balita
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         return view('child.create');
     }
 
@@ -48,7 +51,12 @@ class ChildController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validasi Data (Memastikan form diisi dengan benar)
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
+        // 1. Validasi Data
         $request->validate([
             'full_name'           => 'required|string|max:255',
             'national_id'         => 'nullable|string|max:20',
@@ -69,8 +77,6 @@ class ChildController extends Controller
             'rw'                  => 'required|string|max:10',
             'dusun'               => 'nullable|string|max:255',
             'is_resident'         => 'required|boolean',
-            
-            // Validasi kolom baru
             'birth_weight'        => 'nullable|numeric',
             'birth_length'        => 'nullable|numeric',
             'phone'               => 'nullable|string|max:20',
@@ -98,8 +104,6 @@ class ChildController extends Controller
             'rw'                  => $request->rw,
             'dusun'               => $request->dusun,
             'is_resident'         => $request->is_resident,
-            
-            // Simpan kolom baru
             'birth_weight'        => $request->birth_weight,
             'birth_length'        => $request->birth_length,
             'phone'               => $request->phone,
@@ -114,7 +118,6 @@ class ChildController extends Controller
             'description'   => 'Menambahkan data balita baru: ' . $request->full_name,
         ]);
 
-        // 3. Kembali ke Halaman Daftar Balita
         return redirect()->route('balita.index');
     }
 
@@ -131,10 +134,13 @@ class ChildController extends Controller
      */
     public function edit(string $id)
     {
-        // 1. Cari data balita yang mau diedit
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         $child = Child::findOrFail($id);
         
-        // 2. Tampilkan halaman edit dan kirimkan datanya
         return view('child.edit', compact('child'));
     }
 
@@ -143,7 +149,11 @@ class ChildController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // 1. Cari data balita yang mau diupdate
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         $child = Child::findOrFail($id);
 
         // 2. Validasi Input
@@ -167,8 +177,6 @@ class ChildController extends Controller
             'rw'                  => 'required|string|max:10',
             'dusun'               => 'nullable|string|max:255',
             'is_resident'         => 'required|boolean',
-            
-            // Validasi kolom baru
             'birth_weight'        => 'nullable|numeric',
             'birth_length'        => 'nullable|numeric',
             'phone'               => 'nullable|string|max:20',
@@ -186,7 +194,6 @@ class ChildController extends Controller
             'description'   => 'Mengubah data balita dengan ID: ' . $id,
         ]);
 
-        // 4. Balikkan ke halaman Daftar Balita
         return redirect()->route('balita.index');
     }
 
@@ -195,10 +202,12 @@ class ChildController extends Controller
      */
     public function destroy(string $id)
     {
-        // 1. Cari data balita berdasarkan ID
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         $child = Child::findOrFail($id);
-        
-        // 2. Hapus data balita dari database
         $child->delete();
         
         // Merekam aktivitas
@@ -209,7 +218,6 @@ class ChildController extends Controller
             'description'   => 'Menghapus data balita dengan ID: ' . $id,
         ]);
         
-        // 3. Kembali ke halaman daftar balita
         return redirect()->route('balita.index');
     }
 }

@@ -14,9 +14,6 @@ class StaffController extends Controller
     /**
      * Display a listing of the resource.
      */
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         // Mengambil semua data staff beserta data user (akun) yang berelasi
@@ -31,6 +28,11 @@ class StaffController extends Controller
      */
     public function create()
     {
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         return view('staff.create');
     }
 
@@ -39,6 +41,11 @@ class StaffController extends Controller
      */
     public function store(Request $request)
     {
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         // 1. Validasi Data (Mengecek apakah form sudah diisi dengan benar)
         $request->validate([
             'username'     => 'required|string|max:255|unique:users,username',
@@ -54,7 +61,6 @@ class StaffController extends Controller
         ]);
 
         // 2. Simpan Data ke 2 Tabel (Menggunakan DB Transaction)
-        // DB Transaction memastikan kalau gagal satu, gagal semua (biar data nggak setengah-setengah)
         DB::transaction(function () use ($request) {
             
             // A. Bikin akun login-nya dulu di tabel users
@@ -87,6 +93,7 @@ class StaffController extends Controller
         // 3. Balikkan ke halaman Daftar Kader kalau sudah sukses
         return redirect()->route('kader.index');
     }
+
     /**
      * Display the specified resource.
      */
@@ -100,6 +107,11 @@ class StaffController extends Controller
      */
     public function edit(string $id)
     {
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         // Cari data kader beserta akunnya berdasarkan ID
         $staff = Staff::with('user')->findOrFail($id);
         
@@ -112,12 +124,16 @@ class StaffController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         // 1. Cari data kader yang mau diedit
         $staff = Staff::findOrFail($id);
         $userId = $staff->user_id;
 
         // 2. Validasi Input
-        // Perhatikan bagian username, kita kecualikan ID user ini agar tidak error "sudah digunakan" oleh dirinya sendiri
         $request->validate([
             'username'     => 'required|string|max:255|unique:users,username,' . $userId,
             'password'     => 'nullable|string|min:8', // nullable = boleh kosong jika password tidak ingin diubah
@@ -170,6 +186,11 @@ class StaffController extends Controller
      */
     public function destroy(string $id)
     {
+        // Kunci: Hanya Administrator
+        if (Auth::user()->role !== 'administrator') {
+            abort(403, 'Akses Ditolak: Hanya Administrator.');
+        }
+
         // 1. Cari data kader berdasarkan ID yang diklik
         $staff = Staff::findOrFail($id);
 

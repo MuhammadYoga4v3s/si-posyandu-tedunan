@@ -26,10 +26,21 @@
                         <h3 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Daftar Kader</h3>
                         <p class="text-blue-50 text-sm font-medium mt-1">Kelola data petugas dan hak akses login sistem.</p>
                     </div>
-                    <a href="{{ route('kader.create') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-blue-700 text-sm font-semibold rounded-lg hover:bg-blue-50 transition duration-300 shadow-sm shrink-0">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah Kader
-                    </a>
+
+                    <!-- Tombol Tambah (Aktif untuk Admin, Mati untuk Kader) -->
+                    <div>
+                        @if(auth()->check() && auth()->user()->role === 'administrator')
+                            <a href="{{ route('kader.create') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-blue-700 text-sm font-semibold rounded-lg hover:bg-blue-50 transition duration-300 shadow-sm shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                Tambah Kader
+                            </a>
+                        @else
+                            <div class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/40 text-white/70 text-sm font-semibold rounded-lg cursor-not-allowed select-none shrink-0" title="Akses khusus Administrator">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                Tambah Kader (Khusus Admin)
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -70,18 +81,28 @@
                                     </td>
                                     <td class="px-6 md:px-8 py-4">
                                         <div class="flex items-center justify-center gap-2">
-                                            <!-- Tombol Edit -->
-                                            <a href="{{ route('kader.edit', $staff->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-100 rounded-md hover:bg-amber-100 transition" title="Edit Data">
-                                                Edit
-                                            </a>
-                                            <!-- Tombol Hapus -->
-                                            <form action="{{ route('kader.destroy', $staff->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus kader ini? Semua data terkait akan ikut terhapus!')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-50 border border-red-100 rounded-md hover:bg-red-100 transition" title="Hapus Data">
-                                                    Hapus
-                                                </button>
-                                            </form>
+                                            @if(auth()->check() && auth()->user()->role === 'administrator')
+                                                <!-- Tombol Edit Aktif untuk Admin -->
+                                                <a href="{{ route('kader.edit', $staff->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-100 rounded-md hover:bg-amber-100 transition" title="Edit Data">
+                                                    Edit
+                                                </a>
+                                                <!-- Tombol Hapus Aktif untuk Admin -->
+                                                <form action="{{ route('kader.destroy', $staff->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus kader ini? Semua data terkait akan ikut terhapus!')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-50 border border-red-100 rounded-md hover:bg-red-100 transition" title="Hapus Data">
+                                                        Hapus
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <!-- Tombol Mati / Disable untuk Kader -->
+                                                <span class="px-3 py-1.5 bg-slate-100 text-slate-400 border border-slate-200 font-semibold text-xs rounded-md cursor-not-allowed select-none">
+                                                    Edit (Admin)
+                                                </span>
+                                                <span class="px-3 py-1.5 bg-slate-100 text-slate-400 border border-slate-200 font-semibold text-xs rounded-md cursor-not-allowed select-none">
+                                                    Hapus (Admin)
+                                                </span>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
