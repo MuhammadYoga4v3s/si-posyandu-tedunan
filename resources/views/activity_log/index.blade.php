@@ -71,5 +71,10 @@
                 </div>
             </div>
         </div>
+        <!-- FOOTER -->
+        <div class="w-full mt-auto pt-10 pb-6 px-4 border-t border-blue-100 text-center">
+            <p class="text-xs font-medium text-slate-500">© 2026 Sistem Informasi Posyandu Desa Tedunan. All rights reserved.</p>
+            <p class="text-xs font-medium text-slate-500 mt-1">Developed by <span class="font-semibold text-blue-700">KKN-T UNDIP 88</span></p>
+        </div>
     </div>
 </x-app-layout>
